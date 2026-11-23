@@ -40,12 +40,12 @@ for name,kind,ext in targets:
  frameworkPhase=add('frameworks:'+name,'isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0;')
  configs=[]
  for config in ['Debug','Release']:
-  settings={'PRODUCT_NAME':'$(TARGET_NAME)','PRODUCT_BUNDLE_IDENTIFIER':'com.xdjs.InProcess'+('' if name=='InProcess' else '.'+name),'SWIFT_VERSION':'5.0','IPHONEOS_DEPLOYMENT_TARGET':'27.0','TARGETED_DEVICE_FAMILY':'1','GENERATE_INFOPLIST_FILE':'YES','CODE_SIGN_STYLE':'Automatic','CURRENT_PROJECT_VERSION':'1','MARKETING_VERSION':'0.1.0','SUPPORTED_PLATFORMS':'iphoneos iphonesimulator','SWIFT_EMIT_LOC_STRINGS':'YES','ENABLE_USER_SCRIPT_SANDBOXING':'YES'}
+  settings={'PRODUCT_NAME':'$(TARGET_NAME)','PRODUCT_BUNDLE_IDENTIFIER':'com.xdjs.InProcess'+('' if name=='InProcess' else '.'+name),'SWIFT_VERSION':'5.0','IPHONEOS_DEPLOYMENT_TARGET':'27.0','TARGETED_DEVICE_FAMILY':'1','GENERATE_INFOPLIST_FILE':'YES','CODE_SIGN_STYLE':'Automatic','CURRENT_PROJECT_VERSION':'1','MARKETING_VERSION':'1.0','SUPPORTED_PLATFORMS':'iphoneos iphonesimulator','SWIFT_EMIT_LOC_STRINGS':'YES','ENABLE_USER_SCRIPT_SANDBOXING':'YES'}
   if name=='InProcess': settings.update({'ASSETCATALOG_COMPILER_APPICON_NAME':'AppIcon','INFOPLIST_KEY_CFBundleDisplayName':'In Process','INFOPLIST_KEY_UILaunchScreen_Generation':'YES','INFOPLIST_KEY_UIApplicationSceneManifest_Generation':'YES','INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone':'UIInterfaceOrientationPortrait','INFOPLIST_KEY_ITSAppUsesNonExemptEncryption':'NO'})
   if name in ['InProcess','InProcessUploadExtension']: settings.update({'CODE_SIGN_ENTITLEMENTS':'InProcess/Resources/InProcess.entitlements'})
   if name=='InProcess': settings['INFOPLIST_FILE']='InProcess/Resources/Info.plist'
   if name=='InProcess': settings['INFOPLIST_KEY_NSPhotoLibraryUsageDescription']='In Process reads the album you publish from and uploads its photos in the background, keeping your current Photos edits.'
-  if name=='InProcessUploadExtension': settings.update({'INFOPLIST_FILE':'InProcessUploadExtension/Info.plist','SKIP_INSTALL':'YES','APPLICATION_EXTENSION_API_ONLY':'YES'})
+  if name=='InProcessUploadExtension': settings.update({'INFOPLIST_KEY_CFBundleDisplayName':'In Process','INFOPLIST_FILE':'InProcessUploadExtension/Info.plist','SKIP_INSTALL':'YES','APPLICATION_EXTENSION_API_ONLY':'YES'})
   if name=='InProcessTests': settings.update({'TEST_HOST':'$(BUILT_PRODUCTS_DIR)/InProcess.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/InProcess','BUNDLE_LOADER':'$(TEST_HOST)'})
   if name=='InProcessUITests': settings['TEST_TARGET_NAME']='InProcess'
   if config=='Debug': settings.update({'SWIFT_OPTIMIZATION_LEVEL':'-Onone','SWIFT_ACTIVE_COMPILATION_CONDITIONS':'DEBUG $(inherited)','ENABLE_TESTABILITY':'YES'})

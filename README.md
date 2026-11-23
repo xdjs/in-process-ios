@@ -110,3 +110,7 @@ The app bundles [Archivo](https://github.com/Omnibus-Type/Archivo) and [Spectral
 ## Licence
 
 The code is released under the [MIT License](LICENSE). The bundled fonts keep their own licence, as noted above.
+
+## Privacy
+
+See the [privacy policy](PRIVACY.md).
