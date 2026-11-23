@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>StorageBucket</key>
+	<string>in_process_files</string>
+	<key>StoragePublicKey</key>
+	<string>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp6Z3RlZXNhY2tlemh0bnVxZnl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkzNDExOTMsImV4cCI6MjA2NDkxNzE5M30.HoeibYuC5zZ6XGyfZ5XVlHQoSRjYWpX_nGu0vFFGB4c</string>
+	<key>StorageURL</key>
+	<string>https://zzgteesackezhtnuqfyw.supabase.co</string>
+</dict>
+</plist>

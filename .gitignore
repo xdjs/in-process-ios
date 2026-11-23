@@ -1,0 +1,32 @@
+.DS_Store
+.build/
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcresult/
+.xcodebuildmcp/
+.swiftpm/
+*.xcarchive/
+*.ipa
+*.dSYM/
+__pycache__/
+*.py[cod]
+
+# Local environment, signing material, and live driver state
+.env
+.env.*
+!.env.example
+*.p12
+*.p8
+*.mobileprovision
+*.keychain*
+*.log
+inprocess-live-driver/
+command.json
+response.txt
+draft.json
+session.json
+
+# All verification evidence stays local, including sanitized screenshots.
+/docs/verification/

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>BackgroundUploadURLBase</key>
+	<string>https://example.invalid</string>
+	<key>EXAppExtensionAttributes</key>
+	<dict>
+		<key>EXExtensionPointIdentifier</key>
+		<string>com.apple.photos.background-upload</string>
+	</dict>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Observe an isolated test album for a non-publishing background scheduling diagnostic.</string>
+</dict>
+</plist>
