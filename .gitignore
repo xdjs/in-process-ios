@@ -30,3 +30,6 @@ session.json
 
 # All verification evidence stays local, including sanitized screenshots.
 /docs/verification/
+
+# Your own signing team; see Config/Signing.xcconfig.
+Config/Local.xcconfig

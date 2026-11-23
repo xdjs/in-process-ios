@@ -11,6 +11,8 @@ def add(k, text):
 def q(s): return '"' + s.replace('"', '\\"') + '"'
 targets = [('WakeExtension', 'com.apple.product-type.extensionkit-extension', 'appex'), ('AlbumWakeRepro', 'com.apple.product-type.application', 'app')]
 products, groups = [], []
+# The team comes from the repository's Config/Signing.xcconfig, which includes the git-ignored Local.xcconfig when present.
+signing = add('signing', 'isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "../../Config/Signing.xcconfig"; sourceTree = SOURCE_ROOT;')
 for name, kind, suffix in targets:
     host = name == 'AlbumWakeRepro'
     sources = ['Probe.swift', 'WakeApp.swift' if host else 'WakeExtension.swift']
@@ -31,16 +33,16 @@ for name, kind, suffix in targets:
         phases.append(add('copy', f'isa = PBXCopyFilesBuildPhase; buildActionMask = 2147483647; dstPath = "$(CONTENTS_FOLDER_PATH)/Extensions"; dstSubfolderSpec = 16; files = ({embed},); runOnlyForDeploymentPostprocessing = 0;'))
     configs = []
     for config in ['Debug', 'Release']:
-        settings = {'PRODUCT_NAME':'$(TARGET_NAME)', 'PRODUCT_BUNDLE_IDENTIFIER':'com.xdjs.AlbumWakeRepro' + ('' if host else '.WakeExtension'), 'SWIFT_VERSION':'5.0', 'IPHONEOS_DEPLOYMENT_TARGET':'27.0', 'TARGETED_DEVICE_FAMILY':'1', 'SUPPORTED_PLATFORMS':'iphoneos iphonesimulator', 'GENERATE_INFOPLIST_FILE':'YES', 'INFOPLIST_FILE':name+'.plist', 'CODE_SIGN_ENTITLEMENTS':'Repro.entitlements', 'CODE_SIGN_STYLE':'Automatic', 'DEVELOPMENT_TEAM':'', 'CURRENT_PROJECT_VERSION':'1', 'MARKETING_VERSION':'0.1', 'SWIFT_OPTIMIZATION_LEVEL':'-Onone' if config=='Debug' else '-O'}
+        settings = {'PRODUCT_NAME':'$(TARGET_NAME)', 'PRODUCT_BUNDLE_IDENTIFIER':'com.xdjs.AlbumWakeRepro' + ('' if host else '.WakeExtension'), 'SWIFT_VERSION':'5.0', 'IPHONEOS_DEPLOYMENT_TARGET':'27.0', 'TARGETED_DEVICE_FAMILY':'1', 'SUPPORTED_PLATFORMS':'iphoneos iphonesimulator', 'GENERATE_INFOPLIST_FILE':'YES', 'INFOPLIST_FILE':name+'.plist', 'CODE_SIGN_ENTITLEMENTS':'Repro.entitlements', 'CODE_SIGN_STYLE':'Automatic', 'CURRENT_PROJECT_VERSION':'1', 'MARKETING_VERSION':'0.1', 'SWIFT_OPTIMIZATION_LEVEL':'-Onone' if config=='Debug' else '-O'}
         if host:
             settings.update({'INFOPLIST_KEY_CFBundleDisplayName':'Album Wake Repro', 'INFOPLIST_KEY_UILaunchScreen_Generation':'YES', 'INFOPLIST_KEY_UIApplicationSceneManifest_Generation':'YES', 'INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone':'UIInterfaceOrientationPortrait'})
         else:
             settings.update({'APPLICATION_EXTENSION_API_ONLY':'YES', 'SKIP_INSTALL':'YES', 'SWIFT_ACTIVE_COMPILATION_CONDITIONS':'WAKE_EXTENSION'})
-        configs.append(add(name+config, 'isa = XCBuildConfiguration; name = '+config+'; buildSettings = {'+' '.join(f'{k} = {q(v)};' for k,v in settings.items())+'};'))
+        configs.append(add(name+config, f'isa = XCBuildConfiguration; baseConfigurationReference = {signing}; name = '+config+'; buildSettings = {'+' '.join(f'{k} = {q(v)};' for k,v in settings.items())+'};'))
     cl = add('config'+name, f'isa = XCConfigurationList; buildConfigurations = ({",".join(configs)},); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release;')
     add('target'+name, f'isa = PBXNativeTarget; buildConfigurationList = {cl}; buildPhases = ({",".join(phases)},); buildRules = (); dependencies = ({",".join(deps)}); name = {name}; productName = {name}; productReference = {product}; productType = {q(kind)};')
 pg = add('products', f'isa = PBXGroup; children = ({",".join(products)},); name = Products; sourceTree = "<group>";')
-main = add('main', f'isa = PBXGroup; children = ({",".join(groups)},{pg},); sourceTree = "<group>";')
+main = add('main', f'isa = PBXGroup; children = ({",".join(groups)},{signing},{pg},); sourceTree = "<group>";')
 configs = [add('project'+c, f'isa = XCBuildConfiguration; name = {c}; buildSettings = {{ SDKROOT = iphoneos; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; }};') for c in ['Debug', 'Release']]
 cl = add('projectconfigs', f'isa = XCConfigurationList; buildConfigurations = ({",".join(configs)},); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release;')
 add('project', f'isa = PBXProject; attributes = {{ LastUpgradeCheck = 2700; }}; buildConfigurationList = {cl}; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base); mainGroup = {main}; productRefGroup = {pg}; projectDirPath = ""; projectRoot = ""; targets = ({",".join(uid("target"+t[0]) for t in targets)},);')

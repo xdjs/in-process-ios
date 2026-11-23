@@ -1,0 +1,9 @@
+// Code signing for the app and its upload extension.
+//
+// To build for a device, create Config/Local.xcconfig (git ignores it) with your
+// own Apple developer team:
+//
+//     DEVELOPMENT_TEAM = ABCDE12345
+//
+// Simulator builds need no team.
+#include? "Local.xcconfig"

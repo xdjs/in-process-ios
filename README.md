@@ -51,7 +51,13 @@ xcodebuild -project InProcess.xcodeproj -scheme InProcess -configuration Debug \
   -destination 'generic/platform=iOS Simulator' -derivedDataPath .build/DerivedData build
 ```
 
-To run on a device, set your own development team and bundle identifier, and give the app and its upload extension a shared App Group and Keychain access group. These are set in `scripts/generate-project.py`, which generates `InProcess.xcodeproj`; run it again after adding or removing source files:
+To run on a device, create `Config/Local.xcconfig` with your own Apple developer team. Git ignores this file:
+
+```
+DEVELOPMENT_TEAM = ABCDE12345
+```
+
+You will also need your own bundle identifier, App Group and Keychain access group for the app and its upload extension. Those are set in `scripts/generate-project.py`, which generates `InProcess.xcodeproj`; run it again after changing them or after adding or removing source files:
 
 ```sh
 python3 scripts/generate-project.py

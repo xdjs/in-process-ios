@@ -13,6 +13,8 @@ def add(key, body):
  return uid(key)
 targets=[('InProcessUploadExtension','com.apple.product-type.extensionkit-extension','appex'),('InProcess','com.apple.product-type.application','app'),('InProcessTests','com.apple.product-type.bundle.unit-test','xctest'),('InProcessUITests','com.apple.product-type.bundle.ui-testing','xctest')]
 groups=[]
+# The team comes from Config/Signing.xcconfig, which includes the git-ignored Config/Local.xcconfig when present.
+signing=add('file:Config/Signing.xcconfig','isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Config/Signing.xcconfig"; sourceTree = SOURCE_ROOT;')
 for name,kind,ext in targets:
  files=sorted((root/name).rglob('*.swift'))
  if name=='InProcessUploadExtension':
@@ -40,7 +42,7 @@ for name,kind,ext in targets:
  for config in ['Debug','Release']:
   settings={'PRODUCT_NAME':'$(TARGET_NAME)','PRODUCT_BUNDLE_IDENTIFIER':'com.xdjs.InProcess'+('' if name=='InProcess' else '.'+name),'SWIFT_VERSION':'5.0','IPHONEOS_DEPLOYMENT_TARGET':'27.0','TARGETED_DEVICE_FAMILY':'1','GENERATE_INFOPLIST_FILE':'YES','CODE_SIGN_STYLE':'Automatic','CURRENT_PROJECT_VERSION':'1','MARKETING_VERSION':'0.1.0','SUPPORTED_PLATFORMS':'iphoneos iphonesimulator','SWIFT_EMIT_LOC_STRINGS':'YES','ENABLE_USER_SCRIPT_SANDBOXING':'YES'}
   if name=='InProcess': settings.update({'ASSETCATALOG_COMPILER_APPICON_NAME':'AppIcon','INFOPLIST_KEY_CFBundleDisplayName':'In Process','INFOPLIST_KEY_UILaunchScreen_Generation':'YES','INFOPLIST_KEY_UIApplicationSceneManifest_Generation':'YES','INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone':'UIInterfaceOrientationPortrait','INFOPLIST_KEY_ITSAppUsesNonExemptEncryption':'NO'})
-  if name in ['InProcess','InProcessUploadExtension']: settings.update({'DEVELOPMENT_TEAM':'','CODE_SIGN_ENTITLEMENTS':'InProcess/Resources/InProcess.entitlements'})
+  if name in ['InProcess','InProcessUploadExtension']: settings.update({'CODE_SIGN_ENTITLEMENTS':'InProcess/Resources/InProcess.entitlements'})
   if name=='InProcess': settings['INFOPLIST_FILE']='InProcess/Resources/Info.plist'
   if name=='InProcess': settings['INFOPLIST_KEY_NSPhotoLibraryUsageDescription']='In Process reads the album you publish from and uploads its photos in the background, keeping your current Photos edits.'
   if name=='InProcessUploadExtension': settings.update({'INFOPLIST_FILE':'InProcessUploadExtension/Info.plist','SKIP_INSTALL':'YES','APPLICATION_EXTENSION_API_ONLY':'YES'})
@@ -49,7 +51,7 @@ for name,kind,ext in targets:
   if config=='Debug': settings.update({'SWIFT_OPTIMIZATION_LEVEL':'-Onone','SWIFT_ACTIVE_COMPILATION_CONDITIONS':'DEBUG $(inherited)','ENABLE_TESTABILITY':'YES'})
   else: settings.update({'SWIFT_OPTIMIZATION_LEVEL':'-O','SWIFT_COMPILATION_MODE':'wholemodule'})
   if name=='InProcessUploadExtension': settings['SWIFT_ACTIVE_COMPILATION_CONDITIONS']=settings.get('SWIFT_ACTIVE_COMPILATION_CONDITIONS','$(inherited)')+' UPLOAD_EXTENSION'
-  configs.append(add(name+config,'isa = XCBuildConfiguration; buildSettings = {'+' '.join(f'{k} = {q(v)};' for k,v in settings.items())+'}; name = '+config+';'))
+  configs.append(add(name+config,'isa = XCBuildConfiguration; '+(f'baseConfigurationReference = {signing}; ' if name in ['InProcess','InProcessUploadExtension'] else '')+'buildSettings = {'+' '.join(f'{k} = {q(v)};' for k,v in settings.items())+'}; name = '+config+';'))
  cl=add('configlist:'+name,f'isa = XCConfigurationList; buildConfigurations = ({",".join(configs)},); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release;')
  deps=[]
  if name in ['InProcessTests','InProcessUITests']:
@@ -63,7 +65,7 @@ for name,kind,ext in targets:
   phases.append(add('embedphase',f'isa = PBXCopyFilesBuildPhase; buildActionMask = 2147483647; dstPath = "$(CONTENTS_FOLDER_PATH)/Extensions"; dstSubfolderSpec = 16; files = ({embedded},); name = "Embed App Extensions"; runOnlyForDeploymentPostprocessing = 0;'))
  add('target:'+name,f'isa = PBXNativeTarget; buildConfigurationList = {cl}; buildPhases = ({",".join(phases)},); buildRules = (); dependencies = ({",".join(deps)}{"," if deps else ""}); name = {name}; productName = {name}; productReference = {product}; productType = {q(kind)};')
 products=add('products','isa = PBXGroup; children = ('+','.join(uid('product:'+t[0]) for t in targets)+',); name = Products; sourceTree = "<group>";')
-main=add('main',f'isa = PBXGroup; children = ({",".join(groups)},{products},); sourceTree = "<group>";')
+main=add('main',f'isa = PBXGroup; children = ({",".join(groups)},{signing},{products},); sourceTree = "<group>";')
 configs=[]
 for config in ['Debug','Release']:
  configs.append(add('project'+config,'isa = XCBuildConfiguration; buildSettings = { SDKROOT = iphoneos; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; DEBUG_INFORMATION_FORMAT = '+('dwarf' if config=='Debug' else '"dwarf-with-dsym"')+'; }; name = '+config+';'))
