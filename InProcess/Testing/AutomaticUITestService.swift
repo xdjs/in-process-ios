@@ -61,8 +61,14 @@ import CoreFoundation
     var fixtureSelection: (() -> [String])? {
         { [self] in added += 2; return ["fixture-added-\(added - 1)", "fixture-added-\(added)"] }
     }
-    /// A flat generated tile per photo; no real library is read.
+    /// A flat generated tile per photo; no real library is read. For screenshots, `INPROCESS_UI_TEST_THUMBNAILS`
+    /// may name a folder of images, used in file-name order by the photo's position in the album.
     func thumbnail(for assetID: String, side: CGFloat) async -> UIImage? {
+        if let folder = ProcessInfo.processInfo.environment["INPROCESS_UI_TEST_THUMBNAILS"],
+           let names = try? FileManager.default.contentsOfDirectory(atPath: folder).filter({ !$0.hasPrefix(".") }).sorted(), !names.isEmpty {
+            let index = items.firstIndex { $0.id == assetID } ?? abs(assetID.hashValue)
+            if let image = UIImage(contentsOfFile: folder + "/" + names[index % names.count]) { return image }
+        }
         let seed = Double(assetID.unicodeScalars.reduce(0) { ($0 &* 31 &+ Int($1.value)) % 9973 })
         let hue = CGFloat((seed * 0.618034).truncatingRemainder(dividingBy: 1)) // Golden-ratio steps keep neighbouring tiles distinct.
         return UIGraphicsImageRenderer(size: CGSize(width: side, height: side)).image { context in
